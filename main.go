@@ -9,27 +9,23 @@ import (
 )
 
 func main() {
-	fmt.Println("GAEStaticWebsite started")
-
 	app := fiber.New(fiber.Config{
-		ReadTimeout:           time.Second * 5,
+		ReadTimeout:           time.Second * 1,
 		WriteTimeout:          time.Second * 10,
-		IdleTimeout:           time.Minute,
+		DisableKeepalive:      true,
 		GETOnly:               true,
 		DisableStartupMessage: true,
-		AppName:               "GAE Static Website",
 	})
 
 	app.Static("/", "./www", fiber.Static{
 		Browse: false,
 		Index:  "index.html",
-		MaxAge: 600,
+		MaxAge: 60 * 60 * 24 * 7, // seconds
 	})
 	if port, ok := os.LookupEnv("PORT"); ok {
-		fmt.Println("Listening at :" + port)
 		log.Fatal(app.Listen(":" + port))
 	} else {
-		fmt.Println("Listening at :8000")
-		log.Fatal(app.Listen(":8000"))
+		fmt.Println("No port set, defaulting to 3000")
+		log.Fatal(app.Listen(":3000"))
 	}
 }
